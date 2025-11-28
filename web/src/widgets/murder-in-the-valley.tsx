@@ -3,6 +3,11 @@ import { useState, useEffect, useCallback, useRef } from "react";
 
 import { mountWidget, useDisplayMode } from "skybridge/web";
 
+// Suspect images
+import samImage from "../../assets/sam.png";
+import darioImage from "../../assets/dario.png";
+import elonImage from "../../assets/elon.png";
+
 type GameState = "start" | "intro" | "main";
 
 // ========================================
@@ -424,64 +429,63 @@ const suspects: Suspect[] = [
 // SPRINT 5: POLISHED MAIN SCREEN
 // ========================================
 
-// Suspect Card Component with hover effects
+// Suspect images mapping
+const suspectImages: Record<string, string> = {
+  Sam: samImage,
+  Dario: darioImage,
+  Elon: elonImage,
+};
+
+// Suspect Card
 const SuspectCard = ({
   suspect,
   index,
   isHighlighted,
-  onInterrogate,
+  onClick,
 }: {
   suspect: Suspect;
   index: number;
   isHighlighted: boolean;
-  onInterrogate: () => void;
+  onClick: () => void;
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div
-      className={`suspect-card card-stagger-in relative rounded-xl backdrop-blur-sm border-2 ${
-        isHighlighted
-          ? "border-yellow-400 shadow-[0_0_25px_rgba(250,204,21,0.6)] scale-105 bg-yellow-900/20"
-          : "border-purple-500/30 bg-white/5 hover:bg-white/10"
+      className={`card-stagger-in w-32 sm:w-40 lg:w-48 flex flex-col items-center cursor-pointer transition-all duration-200 ${
+        isHighlighted ? "scale-105" : "hover:scale-105"
       }`}
-      style={{ animationDelay: `${index * 0.15}s` }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      style={{ animationDelay: `${index * 0.1}s` }}
+      onClick={onClick}
     >
-      {/* Card glow effect on hover */}
+      {/* Card */}
       <div
-        className={`absolute inset-0 rounded-xl bg-linear-to-br from-purple-500/10 to-indigo-500/10 transition-opacity duration-300 ${
-          isHovered && !isHighlighted ? "opacity-100" : "opacity-0"
+        className={`w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60 rounded-lg border-2 overflow-hidden transition-all duration-200 ${
+          isHighlighted ? "border-yellow-400 ring-2 ring-yellow-400/50" : "border-purple-500/50 hover:border-purple-400"
         }`}
-      />
-
-      <div className="relative flex flex-col gap-3 sm:gap-4 p-4 sm:p-5 lg:p-6">
-        {/* Suspect info */}
-        <div className="text-center">
-          <h3
-            className={`suspect-name text-lg sm:text-xl font-bold mb-1 transition-all duration-300 ${
-              isHighlighted ? "text-yellow-300" : "text-white"
-            }`}
-          >
-            {suspect.name}
-          </h3>
-          <p className="text-xs sm:text-sm font-semibold text-purple-300 uppercase tracking-wider">{suspect.role}</p>
-        </div>
-
-        {/* Description */}
-        <div className="flex-1">
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{suspect.description}</p>
-        </div>
-
-        {/* Interrogate button */}
-        <button
-          onClick={onInterrogate}
-          className="interrogate-btn w-full py-2.5 sm:py-3 px-4 bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-lg border border-purple-400/30 transition-all duration-200"
-        >
-          Interrogate
-        </button>
+      >
+        <img src={suspectImages[suspect.name]} alt={suspect.name} className="w-full h-full object-cover" />
       </div>
+
+      {/* Name */}
+      <div
+        className={`mt-2 px-3 py-1 rounded transition-colors duration-200 ${isHighlighted ? "bg-yellow-400/20" : ""}`}
+      >
+        <span
+          className={`font-pixel text-sm sm:text-base tracking-wider ${
+            isHighlighted ? "text-yellow-300" : "text-white"
+          }`}
+        >
+          {suspect.name.toUpperCase()}
+        </span>
+      </div>
+
+      {/* Role */}
+      <p
+        className={`text-[10px] sm:text-xs uppercase tracking-wider text-center ${
+          isHighlighted ? "text-yellow-400/70" : "text-purple-400/60"
+        }`}
+      >
+        {suspect.role}
+      </p>
     </div>
   );
 };
@@ -497,38 +501,26 @@ const MainScreen = ({
   onInterrogate: (name: string) => void;
 }) => {
   return (
-    <div className="screen-enter relative rounded-2xl overflow-hidden">
-      {/* Background matching theme */}
-      <div className="absolute inset-0 bg-linear-to-br from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]" />
+    <div className="screen-enter relative rounded-2xl overflow-hidden min-h-[450px] lg:min-h-[550px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
+      {/* Header */}
+      <div className="text-center pt-6 lg:pt-8">
+        <h2 className="header-glow font-pixel text-base sm:text-lg lg:text-xl text-purple-200 tracking-wider">
+          THE SUSPECTS
+        </h2>
+        <p className="mt-2 text-xs sm:text-sm text-slate-400">Choose a suspect to interrogate</p>
+      </div>
 
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-linear-to-t from-purple-900/10 via-transparent to-indigo-900/10" />
-
-      {/* Content */}
-      <div className="relative flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <div className="text-center">
-          <h2 className="header-glow font-pixel text-base sm:text-lg lg:text-xl text-purple-200 tracking-wider">
-            THE SUSPECTS
-          </h2>
-          <p className="mt-2 text-xs sm:text-sm text-slate-400">Choose a suspect to interrogate</p>
-        </div>
-
-        {/* Suspect cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-          {suspects.map((suspect, index) => (
-            <SuspectCard
-              key={suspect.name}
-              suspect={suspect}
-              index={index}
-              isHighlighted={highlightedSuspect === suspect.name}
-              onInterrogate={() => onInterrogate(suspect.name)}
-            />
-          ))}
-        </div>
-
-        {/* Hint text */}
-        <p className="text-center text-xs text-slate-500 mt-2">Click on a suspect to begin questioning</p>
+      {/* Suspects lineup */}
+      <div className="absolute bottom-4 lg:bottom-6 left-0 right-0 flex justify-evenly items-start px-4">
+        {suspects.map((suspect, index) => (
+          <SuspectCard
+            key={suspect.name}
+            suspect={suspect}
+            index={index}
+            isHighlighted={highlightedSuspect === suspect.name}
+            onClick={() => onInterrogate(suspect.name)}
+          />
+        ))}
       </div>
     </div>
   );
