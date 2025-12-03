@@ -95,7 +95,7 @@ const RainEffect = () => {
     left: Math.random() * 100,
     delay: Math.random() * 2,
     duration: 0.5 + Math.random() * 0.5,
-    opacity: 0.1 + Math.random() * 0.3,
+    opacity: 0.1 + Math.random() * 0.4,
   }));
 
   return (
@@ -103,7 +103,7 @@ const RainEffect = () => {
       {drops.map((drop) => (
         <div
           key={drop.id}
-          className="absolute w-px h-[20px] bg-linear-to-b from-transparent via-slate-400/30 to-transparent rain-drop"
+          className="absolute w-px h-[20px] bg-linear-to-b from-transparent via-slate-300/50 to-transparent rain-drop"
           style={{
             left: `${drop.left}%`,
             animationDelay: `${drop.delay}s`,
@@ -492,7 +492,7 @@ const SuspectCard = ({
 
       {/* Role */}
       <p
-        className={`text-[9px] sm:text-[10px] uppercase tracking-wider text-center ${
+        className={`text-[9px] sm:text-[10px] uppercase tracking-wider text-center whitespace-nowrap ${
           isHighlighted ? "text-yellow-400/70" : "text-purple-400/60"
         }`}
       >
