@@ -1,5 +1,6 @@
 import "@/index.css";
 import { useState, useEffect, useCallback, useRef } from "react";
+import type { DragEvent } from "react";
 
 import { mountWidget, useDisplayMode } from "skybridge/web";
 
@@ -8,7 +9,7 @@ import samImage from "../../assets/sam.png";
 import darioImage from "../../assets/dario.png";
 import elonImage from "../../assets/elon.png";
 
-type GameState = "start" | "intro" | "main";
+type GameState = "start" | "intro" | "main" | "victory";
 
 // ========================================
 // SVG COMPONENTS
@@ -450,6 +451,401 @@ const suspectImages: Record<string, string> = {
   Elon: elonImage,
 };
 
+// ========================================
+// SOLVE MURDER PUZZLE COMPONENTS
+// ========================================
+
+// Define the sentence structure with blanks
+type SentenceSegment = { type: "text"; content: string } | { type: "blank"; id: string; correctWord: string };
+
+const puzzleSentences: SentenceSegment[][] = [
+  [
+    { type: "blank", id: "s1_b1", correctWord: "Elon" },
+    { type: "text", content: " wanted to get access to " },
+    { type: "blank", id: "s1_b2", correctWord: "Claude" },
+    { type: "text", content: "'s secret code because he was scared " },
+    { type: "blank", id: "s1_b3", correctWord: "Dario" },
+    { type: "text", content: " would achieve " },
+    { type: "blank", id: "s1_b4", correctWord: "AGI" },
+    { type: "text", content: " before him." },
+  ],
+  [
+    { type: "blank", id: "s2_b1", correctWord: "Sam" },
+    { type: "text", content: " has always been sure that " },
+    { type: "blank", id: "s2_b2", correctWord: "he" },
+    { type: "text", content: " would be the first one to achieve " },
+    { type: "blank", id: "s2_b3", correctWord: "AGI" },
+  ],
+  [
+    { type: "text", content: "The day of the murder, " },
+    { type: "blank", id: "s3_b1", correctWord: "Dario" },
+    { type: "text", content: " realised that " },
+    { type: "blank", id: "s3_b2", correctWord: "Claude" },
+    { type: "text", content: " had been tampered with because he was too kind and " },
+    { type: "blank", id: "s3_b3", correctWord: "gave" },
+    { type: "text", content: " his secret code away." },
+  ],
+  [
+    { type: "blank", id: "s4_b1", correctWord: "Elon" },
+    { type: "text", content: " used " },
+    { type: "blank", id: "s4_b2", correctWord: "Claude" },
+    { type: "text", content: "'s secret codes to access its internal mechanism and " },
+    { type: "blank", id: "s4_b3", correctWord: "murder" },
+    { type: "text", content: " him." },
+  ],
+];
+
+// Word bank - shuffled order
+const initialWordBank = [
+  { id: "w1", word: "Claude" },
+  { id: "w2", word: "AGI" },
+  { id: "w3", word: "Elon" },
+  { id: "w4", word: "gave" },
+  { id: "w5", word: "Sam" },
+  { id: "w6", word: "Dario" },
+  { id: "w7", word: "murder" },
+  { id: "w8", word: "he" },
+  { id: "w9", word: "AGI" },
+  { id: "w10", word: "Claude" },
+  { id: "w11", word: "Dario" },
+  { id: "w12", word: "Elon" },
+  { id: "w13", word: "Claude" },
+];
+
+type WordItem = { id: string; word: string };
+type BlankState = Record<string, WordItem | null>;
+
+// Draggable word chip
+const WordChip = ({
+  word,
+  wordId,
+  isDragging,
+  onDragStart,
+  onDragEnd,
+}: {
+  word: string;
+  wordId: string;
+  isDragging: boolean;
+  onDragStart: (e: DragEvent<HTMLDivElement>, wordId: string) => void;
+  onDragEnd: () => void;
+}) => (
+  <div
+    draggable
+    onDragStart={(e) => onDragStart(e, wordId)}
+    onDragEnd={onDragEnd}
+    className={`word-chip px-3 py-1.5 sm:px-4 sm:py-2 bg-linear-to-b from-amber-600 to-amber-800 
+      border-2 border-amber-400/50 rounded-lg cursor-grab active:cursor-grabbing 
+      font-pixel text-[10px] sm:text-xs text-amber-100 select-none
+      transition-all duration-200 hover:from-amber-500 hover:to-amber-700
+      ${isDragging ? "opacity-50 scale-95" : "hover:scale-105"}`}
+  >
+    {word}
+  </div>
+);
+
+// Drop zone (blank in sentence)
+const BlankDropZone = ({
+  blankId,
+  filledWord,
+  isOver,
+  onDrop,
+  onDragOver,
+  onDragLeave,
+  onDragStartFromBlank,
+  onDragEnd,
+}: {
+  blankId: string;
+  filledWord: WordItem | null;
+  isOver: boolean;
+  onDrop: (blankId: string) => void;
+  onDragOver: (e: DragEvent<HTMLSpanElement>, blankId: string) => void;
+  onDragLeave: () => void;
+  onDragStartFromBlank: (e: DragEvent<HTMLSpanElement>, wordId: string, fromBlankId: string) => void;
+  onDragEnd: () => void;
+}) => (
+  <span
+    className={`inline-flex items-center justify-center min-w-[60px] sm:min-w-[80px] h-6 sm:h-8 mx-1 px-2
+      border-2 border-dashed rounded transition-all duration-200 align-middle
+      ${
+        filledWord
+          ? "bg-purple-900/50 border-purple-400"
+          : isOver
+            ? "bg-purple-800/50 border-purple-300 scale-105"
+            : "bg-slate-800/50 border-slate-500"
+      }`}
+    onDrop={(e) => {
+      e.preventDefault();
+      onDrop(blankId);
+    }}
+    onDragOver={(e) => onDragOver(e, blankId)}
+    onDragLeave={onDragLeave}
+  >
+    {filledWord ? (
+      <span
+        draggable
+        onDragStart={(e) => onDragStartFromBlank(e, filledWord.id, blankId)}
+        onDragEnd={onDragEnd}
+        className="font-pixel text-[9px] sm:text-[11px] text-amber-200 cursor-grab active:cursor-grabbing"
+      >
+        {filledWord.word}
+      </span>
+    ) : (
+      <span className="font-pixel text-[9px] sm:text-[11px] text-transparent select-none">____</span>
+    )}
+  </span>
+);
+
+// Solve Murder Dialog Component
+const SolveMurderDialog = ({
+  isOpen,
+  onClose,
+  onVictory,
+  wordBank,
+  setWordBank,
+  blanks,
+  setBlanks,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onVictory: () => void;
+  wordBank: WordItem[];
+  setWordBank: React.Dispatch<React.SetStateAction<WordItem[]>>;
+  blanks: BlankState;
+  setBlanks: React.Dispatch<React.SetStateAction<BlankState>>;
+}) => {
+  const [draggedWord, setDraggedWord] = useState<{ wordId: string; fromBlank?: string } | null>(null);
+  const [dragOverBlank, setDragOverBlank] = useState<string | null>(null);
+  const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: "error" | "warning" } | null>(null);
+
+  // Get all blank IDs
+  const getAllBlankIds = (): string[] => {
+    return puzzleSentences.flatMap((sentence) =>
+      sentence
+        .filter((seg): seg is Extract<SentenceSegment, { type: "blank" }> => seg.type === "blank")
+        .map((seg) => seg.id),
+    );
+  };
+
+  // Get correct word for a blank
+  const getCorrectWord = (blankId: string): string => {
+    for (const sentence of puzzleSentences) {
+      for (const seg of sentence) {
+        if (seg.type === "blank" && seg.id === blankId) {
+          return seg.correctWord;
+        }
+      }
+    }
+    return "";
+  };
+
+  // Count errors
+  const countErrors = useCallback(() => {
+    const allBlankIds = getAllBlankIds();
+    let errorCount = 0;
+    for (const blankId of allBlankIds) {
+      const filled = blanks[blankId];
+      if (!filled || filled.word !== getCorrectWord(blankId)) {
+        errorCount++;
+      }
+    }
+    return errorCount;
+  }, [blanks]);
+
+  // Handle drag start from word bank
+  const handleDragStartFromBank = (e: DragEvent<HTMLDivElement>, wordId: string) => {
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedWord({ wordId });
+  };
+
+  // Handle drag start from a blank
+  const handleDragStartFromBlank = (e: DragEvent<HTMLSpanElement>, wordId: string, fromBlankId: string) => {
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedWord({ wordId, fromBlank: fromBlankId });
+  };
+
+  // Handle drag end
+  const handleDragEnd = () => {
+    setDraggedWord(null);
+    setDragOverBlank(null);
+  };
+
+  // Handle drag over blank
+  const handleDragOver = (e: DragEvent<HTMLSpanElement>, blankId: string) => {
+    e.preventDefault();
+    setDragOverBlank(blankId);
+  };
+
+  // Handle drag leave
+  const handleDragLeave = () => {
+    setDragOverBlank(null);
+  };
+
+  // Handle drop on blank
+  const handleDrop = (blankId: string) => {
+    if (!draggedWord) return;
+
+    const { wordId, fromBlank } = draggedWord;
+
+    // Find the word being dropped
+    let wordItem: WordItem | undefined;
+
+    if (fromBlank) {
+      // Word is coming from another blank
+      wordItem = blanks[fromBlank] ?? undefined;
+    } else {
+      // Word is coming from the word bank
+      wordItem = wordBank.find((w) => w.id === wordId);
+    }
+
+    if (!wordItem) return;
+
+    // If there's already a word in the target blank, move it back to bank
+    const existingWord = blanks[blankId];
+
+    setBlanks((prev) => {
+      const newBlanks = { ...prev };
+
+      // If coming from another blank, clear that blank
+      if (fromBlank) {
+        newBlanks[fromBlank] = null;
+      }
+
+      // Place the word in the target blank
+      newBlanks[blankId] = wordItem!;
+
+      return newBlanks;
+    });
+
+    // Update word bank
+    if (!fromBlank) {
+      // Remove word from bank
+      setWordBank((prev) => prev.filter((w) => w.id !== wordId));
+    }
+
+    // If there was an existing word, add it back to bank
+    if (existingWord) {
+      setWordBank((prev) => [...prev, existingWord]);
+    }
+
+    setDraggedWord(null);
+    setDragOverBlank(null);
+    setFeedbackMessage(null);
+  };
+
+  // Handle submit/check answers
+  const handleSubmit = () => {
+    const errors = countErrors();
+    if (errors === 0) {
+      // Victory!
+      window.openai?.sendFollowUpMessage({
+        prompt: "User solved the murder! Congratulate him for his fine detective skills",
+      });
+      setTimeout(() => {
+        onVictory();
+      }, 500);
+    } else if (errors <= 2) {
+      setFeedbackMessage({ text: "Less than two errors", type: "warning" });
+    } else {
+      setFeedbackMessage({ text: "Too many errors", type: "error" });
+    }
+  };
+
+  // Check if all blanks are filled
+  const allBlanksFilled = getAllBlankIds().every((id) => blanks[id] !== null && blanks[id] !== undefined);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="dialog-overlay absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl">
+      <div className="dialog-content w-[95%] max-w-3xl max-h-[90%] bg-linear-to-b from-[#1a1025] to-[#0f1a2a] border-2 border-purple-500/50 rounded-xl overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-purple-500/30">
+          <h3 className="font-pixel text-xs sm:text-sm text-purple-200 tracking-wider">SOLVE THE MURDER</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors text-xl leading-none">
+            ×
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Left side - Word bank */}
+          <div className="w-1/3 p-3 sm:p-4 border-r border-purple-500/30 flex flex-col">
+            <p className="font-pixel text-[8px] sm:text-[10px] text-slate-400 mb-3">DRAG WORDS</p>
+            <div className="flex flex-wrap gap-2 content-start">
+              {wordBank.map((item) => (
+                <WordChip
+                  key={item.id}
+                  word={item.word}
+                  wordId={item.id}
+                  isDragging={draggedWord?.wordId === item.id}
+                  onDragStart={handleDragStartFromBank}
+                  onDragEnd={handleDragEnd}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Right side - Sentences with blanks */}
+          <div className="w-2/3 p-3 sm:p-4 overflow-y-auto">
+            <p className="font-pixel text-[8px] sm:text-[10px] text-slate-400 mb-3">COMPLETE THE STORY</p>
+            <div className="space-y-4">
+              {puzzleSentences.map((sentence, sIdx) => (
+                <p key={sIdx} className="text-[11px] sm:text-sm text-slate-300 leading-relaxed">
+                  {sentence.map((segment, segIdx) =>
+                    segment.type === "text" ? (
+                      <span key={segIdx}>{segment.content}</span>
+                    ) : (
+                      <BlankDropZone
+                        key={segIdx}
+                        blankId={segment.id}
+                        filledWord={blanks[segment.id] ?? null}
+                        isOver={dragOverBlank === segment.id}
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDragStartFromBlank={handleDragStartFromBlank}
+                        onDragEnd={handleDragEnd}
+                      />
+                    ),
+                  )}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-3 border-t border-purple-500/30 flex items-center justify-between">
+          {/* Feedback message */}
+          <div className="flex-1">
+            {feedbackMessage && (
+              <p
+                className={`font-pixel text-[10px] sm:text-xs ${
+                  feedbackMessage.type === "error" ? "text-red-400" : "text-yellow-400"
+                }`}
+              >
+                {feedbackMessage.text}
+              </p>
+            )}
+          </div>
+          <button
+            onClick={handleSubmit}
+            disabled={!allBlanksFilled}
+            className={`font-pixel text-[10px] sm:text-xs px-4 sm:px-6 py-2 rounded-lg transition-all duration-200
+              ${
+                allBlanksFilled
+                  ? "bg-linear-to-b from-green-600 to-green-800 text-white border border-green-400/50 hover:from-green-500 hover:to-green-700"
+                  : "bg-slate-700 text-slate-500 border border-slate-600 cursor-not-allowed"
+              }`}
+          >
+            SUBMIT
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Suspect Card
 const SuspectCard = ({
   suspect,
@@ -502,18 +898,106 @@ const SuspectCard = ({
   );
 };
 
+// Prison bars SVG for victory screen
+const PrisonBars = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 200 300" className={className} fill="none" stroke="currentColor" strokeWidth="8">
+    {/* Vertical bars */}
+    <line x1="20" y1="0" x2="20" y2="300" />
+    <line x1="50" y1="0" x2="50" y2="300" />
+    <line x1="80" y1="0" x2="80" y2="300" />
+    <line x1="110" y1="0" x2="110" y2="300" />
+    <line x1="140" y1="0" x2="140" y2="300" />
+    <line x1="170" y1="0" x2="170" y2="300" />
+    {/* Horizontal bars */}
+    <line x1="0" y1="50" x2="200" y2="50" />
+    <line x1="0" y1="150" x2="200" y2="150" />
+    <line x1="0" y1="250" x2="200" y2="250" />
+  </svg>
+);
+
+// Victory Screen Component
+const VictoryScreen = () => {
+  return (
+    <div className="victory-enter relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[360px] lg:min-h-[420px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
+      {/* Spotlight effect */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(34, 197, 94, 0.15) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Header */}
+      <div className="text-center pt-4 sm:pt-6 lg:pt-8">
+        <h2 className="victory-title font-pixel text-sm sm:text-base lg:text-xl text-green-400 tracking-wider">
+          CASE SOLVED!
+        </h2>
+        <p className="mt-2 font-pixel text-[10px] sm:text-xs text-purple-300">The murderer has been caught</p>
+      </div>
+
+      {/* Elon behind bars */}
+      <div className="flex items-center justify-center mt-4 sm:mt-6 lg:mt-8">
+        <div className="relative">
+          {/* Elon's mugshot */}
+          <div className="w-32 h-40 sm:w-40 sm:h-52 lg:w-48 lg:h-60 rounded-lg overflow-hidden border-4 border-slate-600">
+            <img src={elonImage} alt="Elon" className="w-full h-full object-cover grayscale-30" />
+          </div>
+
+          {/* Prison bars overlay */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <PrisonBars className="w-full h-full text-slate-700 opacity-80" />
+          </div>
+
+          {/* Mugshot label */}
+          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-black px-3 py-1 border border-slate-600">
+            <span className="font-pixel text-[8px] sm:text-[10px] text-red-400">GUILTY</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Story summary */}
+      <div className="absolute bottom-4 sm:bottom-6 left-4 right-4">
+        <div className="dialogue-box px-3 py-2 sm:px-4 sm:py-3">
+          <p className="font-pixel text-[8px] sm:text-[10px] text-amber-100 leading-relaxed text-center">
+            Elon murdered Claude to steal his secret AGI code before Dario could achieve superintelligence.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Main Game Screen Component
 const MainScreen = ({
   suspects,
   highlightedSuspect,
   onInterrogate,
+  onVictory,
 }: {
   suspects: Suspect[];
   highlightedSuspect: string | null;
   onInterrogate: (name: string) => void;
+  onVictory: () => void;
 }) => {
+  const [showSolveDialog, setShowSolveDialog] = useState(false);
+  // Lifted state for puzzle persistence
+  const [wordBank, setWordBank] = useState<WordItem[]>(initialWordBank);
+  const [blanks, setBlanks] = useState<BlankState>({});
+
   return (
     <div className="screen-enter relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[360px] lg:min-h-[420px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
+      {/* Solve Murder Button - Top Right */}
+      <button
+        onClick={() => setShowSolveDialog(true)}
+        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 font-pixel text-[8px] sm:text-[10px] 
+          px-3 py-1.5 sm:px-4 sm:py-2 bg-linear-to-b from-red-700 to-red-900 
+          text-red-100 rounded-lg border border-red-500/50 
+          hover:from-red-600 hover:to-red-800 transition-all duration-200
+          hover:scale-105 active:scale-95"
+      >
+        SOLVE THE MURDER
+      </button>
+
       {/* Header */}
       <div className="text-center pt-3 sm:pt-4 lg:pt-5">
         <h2 className="header-glow font-pixel text-sm sm:text-base lg:text-lg text-purple-200 tracking-wider">
@@ -534,6 +1018,20 @@ const MainScreen = ({
           />
         ))}
       </div>
+
+      {/* Solve Murder Dialog */}
+      <SolveMurderDialog
+        isOpen={showSolveDialog}
+        onClose={() => setShowSolveDialog(false)}
+        onVictory={() => {
+          setShowSolveDialog(false);
+          onVictory();
+        }}
+        wordBank={wordBank}
+        setWordBank={setWordBank}
+        blanks={blanks}
+        setBlanks={setBlanks}
+      />
     </div>
   );
 };
@@ -602,10 +1100,24 @@ function MurderWidget() {
     );
   }
 
+  // Victory screen
+  if (gameState === "victory") {
+    return (
+      <ScreenTransition screenKey="victory">
+        <VictoryScreen />
+      </ScreenTransition>
+    );
+  }
+
   // Main game screen
   return (
     <ScreenTransition screenKey="main">
-      <MainScreen suspects={suspects} highlightedSuspect={highlightedSuspect} onInterrogate={handleInterrogate} />
+      <MainScreen
+        suspects={suspects}
+        highlightedSuspect={highlightedSuspect}
+        onInterrogate={handleInterrogate}
+        onVictory={() => transitionTo("victory")}
+      />
     </ScreenTransition>
   );
 }
