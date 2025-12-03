@@ -74,10 +74,17 @@ const SilhouetteHunched = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Lightning bolt SVG
+// Lightning bolt SVG - extended length with more jagged segments
 const LightningBolt = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 60 200" className={className} fill="currentColor">
-    <path d="M35 0 L15 80 L30 80 L10 200 L50 90 L32 90 L55 0 Z" />
+  <svg viewBox="0 0 60 350" className={className} fill="currentColor">
+    <path d="M35 0 L15 80 L28 80 L8 160 L22 160 L0 260 L18 260 L-5 350 L45 270 L28 270 L48 175 L34 175 L52 90 L38 90 L55 0 Z" />
+  </svg>
+);
+
+// Secondary lightning bolt - different shape
+const LightningBoltAlt = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 60 320" className={className} fill="currentColor">
+    <path d="M32 0 L14 70 L26 70 L6 140 L20 140 L-2 230 L16 230 L-8 320 L42 240 L26 240 L46 155 L32 155 L50 80 L36 80 L52 0 Z" />
   </svg>
 );
 
@@ -114,7 +121,7 @@ const StartScreen = ({ onStart }: { onStart: () => void }) => {
   return (
     <div className="relative rounded-2xl overflow-hidden min-h-[400px] lg:min-h-[500px]">
       {/* Background gradient - noir style */}
-      <div className="absolute inset-0 bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]" />
+      <div className="absolute inset-0 bg-linear-to-b from-[#12121a] via-[#221530] to-[#142236]" />
 
       {/* Atmospheric fog/mist layer */}
       <div className="absolute inset-0 bg-linear-to-t from-purple-900/20 via-transparent to-transparent" />
@@ -125,9 +132,17 @@ const StartScreen = ({ onStart }: { onStart: () => void }) => {
       {/* Lightning flash overlay 2 (delayed) */}
       <div className="lightning-overlay-delayed absolute inset-0 bg-linear-to-br from-indigo-400/30 via-transparent to-purple-500/10 pointer-events-none" />
 
+      {/* Lightning flash overlay 3 (third bolt) */}
+      <div className="lightning-overlay-third absolute inset-0 bg-linear-to-b from-purple-300/35 via-white/15 to-transparent pointer-events-none" />
+
+      {/* Lightning flash overlay 4 (fourth bolt) */}
+      <div className="lightning-overlay-fourth absolute inset-0 bg-linear-to-bl from-indigo-300/30 via-white/10 to-transparent pointer-events-none" />
+
       {/* Lightning bolts */}
-      <LightningBolt className="bolt-flash absolute top-0 left-[15%] w-8 h-32 text-purple-300/90 -rotate-12" />
-      <LightningBolt className="bolt-flash-delayed absolute top-0 right-[20%] w-6 h-24 text-indigo-300/80 rotate-6" />
+      <LightningBolt className="bolt-flash absolute top-0 left-[15%] w-12 h-64 text-purple-300/90 -rotate-12" />
+      <LightningBoltAlt className="bolt-flash-delayed absolute top-0 right-[20%] w-10 h-56 text-indigo-300/80 rotate-6" />
+      <LightningBolt className="bolt-flash-third absolute top-0 left-[40%] w-8 h-48 text-purple-200/70 rotate-3" />
+      <LightningBoltAlt className="bolt-flash-fourth absolute top-0 right-[35%] w-9 h-52 text-indigo-200/75 -rotate-6" />
 
       {/* Rain effect */}
       <RainEffect />
@@ -135,13 +150,13 @@ const StartScreen = ({ onStart }: { onStart: () => void }) => {
       {/* Silhouettes container */}
       <div className="absolute bottom-0 left-0 right-0 h-[70%] flex items-end justify-center gap-0">
         {/* Left silhouette - standing figure */}
-        <SilhouetteStanding className="silhouette-sway h-[55%] w-auto text-black/90 -mr-4 mb-0 drop-shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
+        <SilhouetteStanding className="silhouette-sway h-[72%] w-auto text-black/90 -mr-4 mb-0 drop-shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
 
         {/* Center silhouette - hunched/mysterious */}
-        <SilhouetteHunched className="silhouette-sway-slow h-[65%] w-auto text-black/95 z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.9)]" />
+        <SilhouetteHunched className="silhouette-sway-slow h-[85%] w-auto text-black/95 z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.9)]" />
 
         {/* Right silhouette - leaning figure (flipped) */}
-        <SilhouetteLeaning className="silhouette-sway-reverse h-[50%] w-auto text-black/85 -ml-4 mb-0 -scale-x-100 drop-shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
+        <SilhouetteLeaning className="silhouette-sway-reverse h-[68%] w-auto text-black/85 -ml-4 mb-0 -scale-x-100 drop-shadow-[0_0_30px_rgba(0,0,0,0.8)]" />
       </div>
 
       {/* Ground shadow/fog */}

@@ -181,6 +181,43 @@
   animation: lightning-delayed 11s infinite;
 }
 
+/* Additional lightning overlays for more frequent flashes */
+@keyframes lightning-third {
+  0%,
+  58%,
+  60%,
+  62%,
+  100% {
+    opacity: 0;
+  }
+  59%,
+  61% {
+    opacity: 1;
+  }
+}
+
+@keyframes lightning-fourth {
+  0%,
+  23%,
+  25%,
+  27%,
+  100% {
+    opacity: 0;
+  }
+  24%,
+  26% {
+    opacity: 0.8;
+  }
+}
+
+.lightning-overlay-third {
+  animation: lightning-third 9s infinite;
+}
+
+.lightning-overlay-fourth {
+  animation: lightning-fourth 8s infinite;
+}
+
 /* ========================================
    RAIN ANIMATION
    ======================================== */
@@ -326,6 +363,45 @@
 
 .bolt-flash-delayed {
   animation: bolt-flash-delayed 11s infinite;
+}
+
+/* Additional bolt animations for more frequent strikes */
+@keyframes bolt-flash-third {
+  0%,
+  58%,
+  60%,
+  62%,
+  100% {
+    opacity: 0;
+  }
+  59%,
+  61% {
+    opacity: 0.9;
+    filter: blur(1px) drop-shadow(0 0 18px var(--lightning-purple));
+  }
+}
+
+@keyframes bolt-flash-fourth {
+  0%,
+  23%,
+  25%,
+  27%,
+  100% {
+    opacity: 0;
+  }
+  24%,
+  26% {
+    opacity: 0.75;
+    filter: blur(1px) drop-shadow(0 0 15px var(--lightning-blue));
+  }
+}
+
+.bolt-flash-third {
+  animation: bolt-flash-third 9s infinite;
+}
+
+.bolt-flash-fourth {
+  animation: bolt-flash-fourth 8s infinite;
 }
 
 /* ========================================
@@ -599,12 +675,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transform: translateX(-100%);
   transition: transform 0.5s ease;
 }
