@@ -104,22 +104,4 @@ server.widget(
   },
 );
 
-server.tool(
-  "interrogate",
-  "Switch the suspect to interrogate",
-  {
-    suspect: z.string().describe("The suspect you want to interrogate"),
-  },
-  async ({ suspect }): Promise<CallToolResult> => {
-    return {
-      content: [],
-      structuredContent: {
-        type: "text",
-        text: `The user will now interrogate ${suspect}. Answer the user's question as if you were ${suspect}.`,
-      },
-      isError: false,
-    };
-  },
-);
-
 export default server;

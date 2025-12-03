@@ -309,8 +309,7 @@ function useTypewriter(text: string, speed: number = 40) {
 // Dialogue text chunks
 const introDialogue = [
   "The Valley is a small, peaceful community located in the mountains, known for its beautiful scenery and its passion for AI.",
-  "One day, a shocking murder occurred...",
-  "Claude, a friendly AI bot, has been found dead at his home.",
+  "One day, a shocking murder occurred... Claude, a friendly AI bot, has been found dead at his home.",
   "Three suspects have been identified.",
   "Your task is to interrogate each one and uncover the truth behind this mysterious murder.",
 ];
@@ -328,10 +327,10 @@ const DialogueBox = ({
   onSkip: () => void;
 }) => (
   <div
-    className="dialogue-box dialogue-slide-up p-4 lg:p-6 cursor-pointer select-none"
+    className="dialogue-box dialogue-slide-up px-4 py-3 lg:px-6 lg:py-4 cursor-pointer select-none"
     onClick={isComplete ? onContinue : onSkip}
   >
-    <p className="font-pixel text-xs sm:text-sm lg:text-base text-amber-100 leading-relaxed lg:leading-loose min-h-16 lg:min-h-20">
+    <p className="font-pixel text-xs sm:text-sm lg:text-base text-amber-100 leading-relaxed lg:leading-loose min-h-12 lg:min-h-14">
       {text}
       {!isComplete && <span className="cursor-blink text-amber-300">▌</span>}
     </p>
@@ -360,7 +359,7 @@ const IntroScreen = ({ onContinue }: { onContinue: () => void }) => {
   };
 
   return (
-    <div className="relative rounded-2xl overflow-hidden min-h-[450px] lg:min-h-[550px]">
+    <div className="relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[450px]">
       {/* Background - dark crime scene */}
       <div className="absolute inset-0 bg-linear-to-b from-[#0a0a0f] via-[#0f0f1a] to-[#1a1025]" />
 
@@ -382,21 +381,21 @@ const IntroScreen = ({ onContinue }: { onContinue: () => void }) => {
       />
 
       {/* Crime scene tape / ambient elements */}
-      <div className="absolute top-4 left-0 right-0 h-6 bg-yellow-500/10 -rotate-2 flex items-center justify-center overflow-hidden">
-        <span className="font-pixel text-[8px] text-yellow-500/30 tracking-[0.5em] whitespace-nowrap">
+      <div className="absolute top-2 sm:top-4 left-0 right-0 h-5 sm:h-6 bg-yellow-500/10 -rotate-2 flex items-center justify-center overflow-hidden">
+        <span className="font-pixel text-[6px] sm:text-[8px] text-yellow-500/30 tracking-[0.5em] whitespace-nowrap">
           CRIME SCENE DO NOT CROSS CRIME SCENE DO NOT CROSS CRIME SCENE
         </span>
       </div>
 
       {/* Robot scene container */}
-      <div className="absolute inset-0 flex items-center justify-center pb-32">
+      <div className="absolute inset-0 flex items-center justify-center pb-20 sm:pb-24 lg:pb-28">
         {/* Dead robot with reveal animation */}
         <div
           className={`relative transition-all duration-3000 ease-out ${
             sceneRevealed ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
         >
-          <DeadRobotClaude className="w-48 h-32 sm:w-64 sm:h-44 lg:w-80 lg:h-56 robot-flicker" />
+          <DeadRobotClaude className="w-40 h-28 sm:w-56 sm:h-40 lg:w-72 lg:h-48 robot-flicker" />
 
           {/* Spark effects around damaged areas */}
           <SparkEffect className="spark w-4 h-4 top-[30%] right-[25%]" delay={0} />
@@ -406,10 +405,10 @@ const IntroScreen = ({ onContinue }: { onContinue: () => void }) => {
       </div>
 
       {/* Floor shadow */}
-      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-64 h-8 bg-black/50 rounded-full blur-xl" />
+      <div className="absolute bottom-16 sm:bottom-20 lg:bottom-24 left-1/2 -translate-x-1/2 w-48 sm:w-56 lg:w-64 h-6 sm:h-8 bg-black/50 rounded-full blur-xl" />
 
       {/* Dialogue box at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6">
+      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-6">
         <DialogueBox text={displayedText} isComplete={isComplete} onContinue={handleContinue} onSkip={skip} />
       </div>
     </div>
@@ -465,7 +464,7 @@ const SuspectCard = ({
 }) => {
   return (
     <div
-      className={`card-stagger-in w-32 sm:w-40 lg:w-48 flex flex-col items-center cursor-pointer transition-all duration-200 ${
+      className={`card-stagger-in w-28 sm:w-36 lg:w-44 flex flex-col items-center cursor-pointer transition-all duration-200 ${
         isHighlighted ? "scale-105" : "hover:scale-105"
       }`}
       style={{ animationDelay: `${index * 0.1}s` }}
@@ -473,7 +472,7 @@ const SuspectCard = ({
     >
       {/* Card */}
       <div
-        className={`w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60 rounded-lg border-2 overflow-hidden transition-all duration-200 ${
+        className={`w-24 h-28 sm:w-32 sm:h-36 lg:w-40 lg:h-44 rounded-lg border-2 overflow-hidden transition-all duration-200 ${
           isHighlighted ? "border-yellow-400 ring-2 ring-yellow-400/50" : "border-purple-500/50 hover:border-purple-400"
         }`}
       >
@@ -482,12 +481,10 @@ const SuspectCard = ({
 
       {/* Name */}
       <div
-        className={`mt-2 px-3 py-1 rounded transition-colors duration-200 ${isHighlighted ? "bg-yellow-400/20" : ""}`}
+        className={`mt-1.5 px-2 py-0.5 rounded transition-colors duration-200 ${isHighlighted ? "bg-yellow-400/20" : ""}`}
       >
         <span
-          className={`font-pixel text-sm sm:text-base tracking-wider ${
-            isHighlighted ? "text-yellow-300" : "text-white"
-          }`}
+          className={`font-pixel text-xs sm:text-sm tracking-wider ${isHighlighted ? "text-yellow-300" : "text-white"}`}
         >
           {suspect.name.toUpperCase()}
         </span>
@@ -495,7 +492,7 @@ const SuspectCard = ({
 
       {/* Role */}
       <p
-        className={`text-[10px] sm:text-xs uppercase tracking-wider text-center ${
+        className={`text-[9px] sm:text-[10px] uppercase tracking-wider text-center ${
           isHighlighted ? "text-yellow-400/70" : "text-purple-400/60"
         }`}
       >
@@ -516,17 +513,17 @@ const MainScreen = ({
   onInterrogate: (name: string) => void;
 }) => {
   return (
-    <div className="screen-enter relative rounded-2xl overflow-hidden min-h-[450px] lg:min-h-[550px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
+    <div className="screen-enter relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[360px] lg:min-h-[420px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
       {/* Header */}
-      <div className="text-center pt-6 lg:pt-8">
-        <h2 className="header-glow font-pixel text-base sm:text-lg lg:text-xl text-purple-200 tracking-wider">
+      <div className="text-center pt-3 sm:pt-4 lg:pt-5">
+        <h2 className="header-glow font-pixel text-sm sm:text-base lg:text-lg text-purple-200 tracking-wider">
           THE SUSPECTS
         </h2>
-        <p className="mt-2 text-xs sm:text-sm text-slate-400">Choose a suspect to interrogate</p>
+        <p className="mt-1 text-[10px] sm:text-xs text-slate-400">Choose a suspect to interrogate</p>
       </div>
 
       {/* Suspects lineup */}
-      <div className="absolute bottom-4 lg:bottom-6 left-0 right-0 flex justify-evenly items-start px-4">
+      <div className="absolute bottom-3 sm:bottom-4 lg:bottom-5 left-0 right-0 flex justify-evenly items-start px-2 sm:px-4">
         {suspects.map((suspect, index) => (
           <SuspectCard
             key={suspect.name}
