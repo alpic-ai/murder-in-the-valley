@@ -13,6 +13,7 @@ Thumbs.db
 # NODE.JS & PACKAGE MANAGERS
 # =============================================================================
 node_modules/
+.pnpm-store/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
