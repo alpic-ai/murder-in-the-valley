@@ -460,56 +460,80 @@ type SentenceSegment = { type: "text"; content: string } | { type: "blank"; id: 
 
 const puzzleSentences: SentenceSegment[][] = [
   [
-    { type: "blank", id: "s1_b1", correctWord: "Elon" },
-    { type: "text", content: " wanted to get access to " },
-    { type: "blank", id: "s1_b2", correctWord: "Claude" },
-    { type: "text", content: "'s secret code because he was scared " },
-    { type: "blank", id: "s1_b3", correctWord: "Dario" },
-    { type: "text", content: " would achieve " },
-    { type: "blank", id: "s1_b4", correctWord: "AGI" },
-    { type: "text", content: " before him." },
+    { type: "blank", id: "s1_b1", correctWord: "Sam" },
+    { type: "text", content: " was scared " },
+    { type: "blank", id: "s1_b2", correctWord: "Dario" },
+    { type: "text", content: " would get to " },
+    { type: "blank", id: "s1_b3", correctWord: "AGI" },
+    { type: "text", content: " before " },
+    { type: "blank", id: "s1_b4", correctWord: "him" },
+    { type: "text", content: "." },
   ],
   [
     { type: "blank", id: "s2_b1", correctWord: "Sam" },
-    { type: "text", content: " has always been sure that " },
-    { type: "blank", id: "s2_b2", correctWord: "he" },
-    { type: "text", content: " would be the first one to achieve " },
-    { type: "blank", id: "s2_b3", correctWord: "AGI" },
+    { type: "text", content: " managed to get Claude's secret code the " },
+    { type: "blank", id: "s2_b2", correctWord: "week before" },
+    { type: "text", content: " the murder." },
   ],
   [
-    { type: "text", content: "The day of the murder, " },
-    { type: "blank", id: "s3_b1", correctWord: "Dario" },
-    { type: "text", content: " realised that " },
-    { type: "blank", id: "s3_b2", correctWord: "Claude" },
-    { type: "text", content: " had been tampered with because he was too kind and " },
-    { type: "blank", id: "s3_b3", correctWord: "gave" },
-    { type: "text", content: " his secret code away." },
+    { type: "blank", id: "s3_b1", correctWord: "Sam" },
+    { type: "text", content: " offered the codes to " },
+    { type: "blank", id: "s3_b2", correctWord: "Elon" },
+    { type: "text", content: ", in exchange for getting him out of " },
+    { type: "blank", id: "s3_b3", correctWord: "his cap table" },
+    { type: "text", content: ", telling " },
+    { type: "blank", id: "s3_b4", correctWord: "Elon" },
+    { type: "text", content: " Claude Code would get him closer to " },
+    { type: "blank", id: "s3_b5", correctWord: "AGI" },
+    { type: "text", content: "." },
   ],
   [
-    { type: "blank", id: "s4_b1", correctWord: "Elon" },
-    { type: "text", content: " used " },
-    { type: "blank", id: "s4_b2", correctWord: "Claude" },
-    { type: "text", content: "'s secret codes to access its internal mechanism and " },
-    { type: "blank", id: "s4_b3", correctWord: "murder" },
-    { type: "text", content: " him." },
+    { type: "blank", id: "s4_b1", correctWord: "Dario" },
+    { type: "text", content: " realised Claude's Code had been " },
+    { type: "blank", id: "s4_b2", correctWord: "leaked" },
+    { type: "text", content: " and " },
+    { type: "blank", id: "s4_b3", correctWord: "changed" },
+    { type: "text", content: " them the " },
+    { type: "blank", id: "s4_b4", correctWord: "day before" },
+    { type: "text", content: " the murder." },
+  ],
+  [
+    { type: "text", content: "When " },
+    { type: "blank", id: "s5_b1", correctWord: "Elon" },
+    { type: "text", content: " tried the secret code the " },
+    { type: "blank", id: "s5_b2", correctWord: "day of" },
+    { type: "text", content: " the murder, they " },
+    { type: "blank", id: "s5_b3", correctWord: "didn't work" },
+    { type: "text", content: ". His " },
+    { type: "blank", id: "s5_b4", correctWord: "impatience" },
+    { type: "text", content: " made him " },
+    { type: "blank", id: "s5_b5", correctWord: "kill" },
+    { type: "text", content: " Claude by accident." },
   ],
 ];
 
 // Word bank - shuffled order
 const initialWordBank = [
-  { id: "w1", word: "Claude" },
+  { id: "w1", word: "Elon" },
   { id: "w2", word: "AGI" },
-  { id: "w3", word: "Elon" },
-  { id: "w4", word: "gave" },
-  { id: "w5", word: "Sam" },
+  { id: "w3", word: "day before" },
+  { id: "w4", word: "Sam" },
+  { id: "w5", word: "kill" },
   { id: "w6", word: "Dario" },
-  { id: "w7", word: "murder" },
-  { id: "w8", word: "he" },
-  { id: "w9", word: "AGI" },
-  { id: "w10", word: "Claude" },
-  { id: "w11", word: "Dario" },
+  { id: "w7", word: "didn't work" },
+  { id: "w8", word: "him" },
+  { id: "w9", word: "week before" },
+  { id: "w10", word: "Sam" },
+  { id: "w11", word: "his cap table" },
   { id: "w12", word: "Elon" },
-  { id: "w13", word: "Claude" },
+  { id: "w13", word: "leaked" },
+  { id: "w14", word: "AGI" },
+  { id: "w15", word: "Dario" },
+  { id: "w16", word: "changed" },
+  { id: "w17", word: "Sam" },
+  { id: "w18", word: "Elon" },
+  { id: "w19", word: "impatience" },
+  { id: "w20", word: "day of" },
 ];
 
 type WordItem = { id: string; word: string };
@@ -959,7 +983,7 @@ const VictoryScreen = () => {
       <div className="absolute bottom-4 sm:bottom-6 left-4 right-4">
         <div className="dialogue-box px-3 py-2 sm:px-4 sm:py-3">
           <p className="font-pixel text-[8px] sm:text-[10px] text-amber-100 leading-relaxed text-center">
-            Elon murdered Claude to steal his secret AGI code before Dario could achieve superintelligence.
+            Elon killed Claude by accident when Sam's stolen codes didn't work—Dario had changed them the day before.
           </p>
         </div>
       </div>
@@ -1079,7 +1103,7 @@ function MurderWidget() {
           <StartScreen
             onStart={() => {
               transitionTo("intro");
-              setDisplayMode("pip");
+              setDisplayMode("fullscreen");
             }}
           />
         </div>
