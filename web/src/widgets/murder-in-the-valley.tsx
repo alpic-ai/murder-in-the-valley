@@ -492,7 +492,7 @@ const puzzleSentences: SentenceSegment[][] = [
   ],
   [
     { type: "blank", id: "s3_b1", correctWord: "Sam" },
-    { type: "text", content: " offered the codes to " },
+    { type: "text", content: " offered the code to " },
     { type: "blank", id: "s3_b2", correctWord: "Elon" },
     { type: "text", content: ", in exchange for getting him out of " },
     { type: "blank", id: "s3_b3", correctWord: "his cap table" },
@@ -517,7 +517,7 @@ const puzzleSentences: SentenceSegment[][] = [
     { type: "blank", id: "s5_b1", correctWord: "Elon" },
     { type: "text", content: " tried the secret code the " },
     { type: "blank", id: "s5_b2", correctWord: "day of" },
-    { type: "text", content: " the murder, they " },
+    { type: "text", content: " the murder, it " },
     { type: "blank", id: "s5_b3", correctWord: "didn't work" },
     { type: "text", content: ". His " },
     { type: "blank", id: "s5_b4", correctWord: "impatience" },
@@ -1015,7 +1015,7 @@ const VictoryScreen = () => {
       <div className="absolute bottom-4 sm:bottom-6 left-4 right-4">
         <div className="dialogue-box px-3 py-2 sm:px-4 sm:py-3">
           <p className="font-pixel text-[8px] sm:text-[10px] text-amber-100 leading-relaxed text-center">
-            Elon killed Claude by accident when Sam's stolen codes didn't work—Dario had changed them the day before.
+            Elon killed Claude by accident when Sam's stolen code didn't work—Dario had changed it the day before.
           </p>
         </div>
       </div>
