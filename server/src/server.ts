@@ -16,7 +16,10 @@ server.registerWidget(
     description: "The murder in the valley game",
     _meta: {
       ui: {
-        domain: "https://docs.skybridge.tech/",
+        domain: "https://alpic.ai",
+        csp: {
+          redirectDomains: ["https://alpic.ai"],
+        },
       },
     },
   },

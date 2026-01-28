@@ -2,12 +2,15 @@ import "@/index.css";
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { DragEvent } from "react";
 
-import { mountWidget, useDisplayMode } from "skybridge/web";
+import { mountWidget, useDisplayMode, useOpenExternal } from "skybridge/web";
 
 // Suspect images
 import samImage from "../../assets/sam.png";
 import darioImage from "../../assets/dario.png";
 import elonImage from "../../assets/elon.png";
+
+// Logo
+import alpicLogo from "../../assets/alpic.svg";
 
 type GameState = "start" | "intro" | "main" | "victory";
 
@@ -119,6 +122,8 @@ const RainEffect = () => {
 
 // Start Screen Component
 const StartScreen = ({ onStart }: { onStart: () => void }) => {
+  const openExternal = useOpenExternal();
+
   return (
     <div className="relative rounded-2xl overflow-hidden min-h-[400px] lg:min-h-[500px]">
       {/* Background gradient - noir style */}
@@ -168,7 +173,7 @@ const StartScreen = ({ onStart }: { onStart: () => void }) => {
         {/* Title */}
         <div className="text-center pt-6 lg:pt-10">
           <h1 className="font-pixel text-lg sm:text-xl lg:text-2xl text-purple-200 title-flicker leading-relaxed tracking-wider">
-            A MURDER
+            MURDER
             <br />
             <span className="text-white">IN THE VALLEY</span>
           </h1>
@@ -187,6 +192,16 @@ const StartScreen = ({ onStart }: { onStart: () => void }) => {
           </button>
         </div>
       </div>
+
+      {/* Alpic branding - bottom right */}
+      <button
+        onClick={() => openExternal("https://alpic.ai")}
+        className="absolute bottom-5 right-5 lg:bottom-6 lg:right-6 z-20 flex items-end gap-2 opacity-60 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+      >
+        <span className="text-[11px] lg:text-xs text-slate-400 tracking-wide leading-none">An</span>
+        <img src={alpicLogo} alt="Alpic" className="h-4 lg:h-5" />
+        <span className="text-[11px] lg:text-xs text-slate-400 tracking-wide leading-none">game</span>
+      </button>
     </div>
   );
 };
