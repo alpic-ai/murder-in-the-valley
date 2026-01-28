@@ -18,7 +18,7 @@ server.registerWidget(
       ui: {
         domain: "https://alpic.ai",
         csp: {
-          redirectDomains: ["https://alpic.ai"],
+          redirectDomains: ["https://alpic.ai", "https://github.com"],
         },
       },
     },

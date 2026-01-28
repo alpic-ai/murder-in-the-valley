@@ -798,11 +798,11 @@ const SolveMurderDialog = ({
     <div className="dialog-overlay absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl">
       <div className="dialog-content w-[95%] max-w-3xl max-h-[90%] bg-linear-to-b from-[#1a1025] to-[#0f1a2a] border-2 border-purple-500/50 rounded-xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-purple-500/30">
-          <h3 className="font-pixel text-xs sm:text-sm text-purple-200 tracking-wider">SOLVE THE MURDER</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors text-xl leading-none">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-purple-500/30">
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors text-xl leading-none flex items-center justify-center -mt-1">
             ×
           </button>
+          <h3 className="font-pixel text-xs sm:text-sm text-purple-200 tracking-wider">SOLVE THE MURDER</h3>
         </div>
 
         {/* Content */}
@@ -956,6 +956,8 @@ const PrisonBars = ({ className }: { className?: string }) => (
 
 // Victory Screen Component
 const VictoryScreen = () => {
+  const openExternal = useOpenExternal();
+
   return (
     <div className="victory-enter relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[360px] lg:min-h-[420px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
       {/* Spotlight effect */}
@@ -965,6 +967,21 @@ const VictoryScreen = () => {
           background: "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(34, 197, 94, 0.15) 0%, transparent 70%)",
         }}
       />
+
+      {/* Skybridge promo card - top right */}
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 max-w-[160px] sm:max-w-[200px]">
+        <div className="bg-slate-900/80 border border-purple-500/30 rounded-lg px-4 py-3 backdrop-blur-sm">
+          <p className="text-[10px] sm:text-xs text-slate-300 leading-relaxed">
+            If you want to build a cool App like this one, you should check out{" "}
+            <button
+              onClick={() => openExternal("https://github.com/alpic-ai/skybridge")}
+              className="text-amber-400 hover:text-amber-300 transition-colors cursor-pointer font-semibold"
+            >
+              Skybridge
+            </button>
+          </p>
+        </div>
+      </div>
 
       {/* Header */}
       <div className="text-center pt-4 sm:pt-6 lg:pt-8">
@@ -1025,10 +1042,10 @@ const MainScreen = ({
 
   return (
     <div className="screen-enter relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[360px] lg:min-h-[420px] bg-linear-to-b from-[#0a0a0f] via-[#1a1025] to-[#0f1a2a]">
-      {/* Solve Murder Button - Top Right */}
+      {/* Solve Murder Button - Top Left */}
       <button
         onClick={() => setShowSolveDialog(true)}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 font-pixel text-[8px] sm:text-[10px] 
+        className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 font-pixel text-[8px] sm:text-[10px] 
           px-3 py-1.5 sm:px-4 sm:py-2 bg-linear-to-b from-red-700 to-red-900 
           text-red-100 rounded-lg border border-red-500/50 
           hover:from-red-600 hover:to-red-800 transition-all duration-200
