@@ -10,19 +10,26 @@ const server = new McpServer(
   { capabilities: {} },
 );
 
-server.widget(
+server.registerWidget(
   "murder-in-the-valley",
   {
-    description: "A game of murder in the Valley",
+    description: "The murder in the valley game",
+    _meta: {
+      ui: {
+        domain: "https://docs.skybridge.tech/",
+      },
+    },
   },
   {
     description: "Use this tool to start a game of murder in the valley.",
     inputSchema: {},
     annotations: {
       readOnlyHint: true,
+      destructiveHint: false,
+      openWorldHint: false,
     },
     _meta: {
-      "openai/widgetDescription": "The widget displays options for trips to the user.",
+      "openai/widgetAccessible": true,
       "openai/toolInvocation/invoking": "Starting a game of murder in the valley...",
       "openai/toolInvocation/invoked": "Game of murder in the valley ready.",
     },
@@ -35,7 +42,6 @@ server.widget(
          * Use it for data that should not influence the model’s reasoning, like the full set of locations that backs a dropdown.
          * _meta is never shown to the model.
          */
-        _meta: { "openai/widgetAccessible": true },
         /**
          * Structured data that is used to hydrate your component.
          * ChatGPT injects this object into your iframe as window.openai.toolOutput

@@ -793,8 +793,8 @@ const SolveMurderDialog = ({
         {/* Content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left side - Word bank */}
-          <div className="w-1/3 p-3 sm:p-4 border-r border-purple-500/30 flex flex-col">
-            <p className="font-pixel text-[8px] sm:text-[10px] text-slate-400 mb-3">DRAG WORDS</p>
+          <div className="w-1/3 p-3 sm:p-4 border-r border-purple-500/30 flex flex-col overflow-y-auto">
+            <p className="font-pixel text-[8px] sm:text-[10px] text-slate-400 mb-3 shrink-0">DRAG WORDS</p>
             <div className="flex flex-wrap gap-2 content-start">
               {wordBank.map((item) => (
                 <WordChip
